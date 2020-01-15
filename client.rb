@@ -23,6 +23,12 @@ class Client
       #end
     end
 
+    def read_response()
+      while line = @socket.gets     # Read lines from the socket
+        puts(line.chop)       # And print with platform line terminator
+      end
+    end
+
     def help()
       puts("COMMANDS:")
       puts("get:")
@@ -50,11 +56,13 @@ class Client
             puts("CLOSED")
           when "get","gets"
             array.length === 2 ? @socket.write(line): puts("Wrong parameters")
+            read_response()
           when "set","add","replace","append","prepend"
             datablock = gets.chomp
             array.length === 5 ? @socket.write(line + " " + datablock): puts("Wrong parameters")
+            read_response()
           when "cas"
-            array.length === 5 ? @server.cas(array[1],array[2],Integer(array[3]),Integer(array[4]), datablock): puts("Wrong parameters")
+            array.length === 6 ? @server.cas(array[1],array[2],Integer(array[3]),Integer(array[4]), datablock): puts("Wrong parameters")
           else 
             puts("Wrong command")
         end
