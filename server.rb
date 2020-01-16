@@ -76,7 +76,6 @@ class Server
         Thread.start(server.accept) do |client|
           client.puts(Time.now.ctime)   
           while line = client.recv(200)
-            puts client
             depurate()
             puts line
             interprete(client,line)

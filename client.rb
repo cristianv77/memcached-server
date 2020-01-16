@@ -6,63 +6,73 @@ class Client
 
     attr_accessor :server
     attr_accessor :localdata
+    attr_accessor :connected
     attr_accessor :socket
   
     def initialize()
       @localdata = {}
+      @connected = false
     end
   
     def connect()
       hostname = 'localhost'
       port = 2000
       @socket = TCPSocket.open(hostname, port)
-      #while 
-      line = @socket.gets     # Read lines from the socket
+      @connected = true
+      line = @socket.gets   
       puts("CONNECTED") 
-      puts(line.chop)       # And print with platform line terminator
-      #end
+      puts(line.chop)
     end
 
-    def read_response()
-      while line = @socket.gets     # Read lines from the socket
-        puts(line.chop)       # And print with platform line terminator
-      end
+    def send(line)
+      @socket.write(line)
+      response = @socket.recv(200) 
+      puts(response.chop)      
     end
 
     def help()
       puts("COMMANDS:")
-      puts("get:")
-      puts("gets:")
-      puts("set:")
-      puts("add:")
-      puts("replace:")
-      puts("append:")
-      puts("prepend:")
+      puts("get: get <key>")
+      puts("gets: gets <key>")
+      puts("set: set <flag> <ttl> <size>")
+      puts("add: add <flag> <ttl> <size>")
+      puts("replace: replace <flag> <ttl> <size>")
+      puts("append: append <flag> <ttl> <size>")
+      puts("prepend: prepend <flag> <ttl> <size>")
       puts("cas:")
     end
   
-    def interprete()
-      command =""
+    def interprete(line)
+      array = line.split(" ")
+      command = array[0]
+      case command
+        when "get","gets"
+          array.length === 2 ? send(line): puts("Wrong parameters")
+        when "set","add","replace","append","prepend"
+          datablock = gets.chomp
+          array.length === 5 ? send(line + " " + datablock): puts("Wrong parameters")
+        when "cas"
+          array.length === 6 ? send(line): puts("Wrong parameters")
+          
+      end
+      
+    end
+
+    def read_command()
+      command = ""
       while command != "-q" && command != "quit"
         line = gets.chomp
         array = line.split(" ")
         command = array[0]
         case command 
           when "telnet"
-            connect()
+            @connected ? puts("ALREADY CONNECTED"): connect()
           when "-h", "help"
             array.length === 1 ? help(): puts("Not help parameters")
           when "-q", "quit"
             puts("CLOSED")
-          when "get","gets"
-            array.length === 2 ? @socket.write(line): puts("Wrong parameters")
-            read_response()
-          when "set","add","replace","append","prepend"
-            datablock = gets.chomp
-            array.length === 5 ? @socket.write(line + " " + datablock): puts("Wrong parameters")
-            read_response()
-          when "cas"
-            array.length === 6 ? @server.cas(array[1],array[2],Integer(array[3]),Integer(array[4]), datablock): puts("Wrong parameters")
+          when "get","gets", "set","add","replace","append","prepend","cas"
+            @connected ? interprete(line): puts("Not connection with any server")
           else 
             puts("Wrong command")
         end
@@ -72,7 +82,7 @@ end
 
  
 int = Client.new()
-int.interprete()
+int.read_command()
 #int.interprete('gets 1,2')
 #int.interprete('set 7 0 0 8 cristian')
 #int.interprete('add 7 0 0 7 cebolla')
