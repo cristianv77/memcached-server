@@ -24,15 +24,14 @@ end
 class Server
     attr_accessor :port
     attr_accessor :data
-    attr_accessor :clients
-    attr_reader :sock
-  
-    def initialize()
+    attr_accessor :server
+    
+    def initialize(port = 2000)
       thiago = Item.new("1",0,0,0,"thiago")
       tito = Item.new("2",0,60,0,"tito")
       topo = Item.new("3",0,0,0,"topo")
+      @port = port
       @data = {"1" => thiago, "2" => tito, "3" => topo}
-      @clients = []
     end
 
     def interprete(client, line)
@@ -70,10 +69,13 @@ class Server
 
     def connect()
       @pid = Process.pid
-      server = TCPServer.open(2000)    
+      @server = TCPServer.open(@port)    
       puts("RUNNING SERVER")
+    end
+
+    def listen()
       loop {                           
-        Thread.start(server.accept) do |client|
+        Thread.start(@server.accept) do |client|
           client.puts(Time.now.ctime)   
           while line = client.recv(200)
             depurate()
@@ -83,44 +85,51 @@ class Server
         end
       }
     end
+
+    def print (client, line)
+      if client != nil 
+        client.puts(line)
+      end
+      puts line
+    end
   
     def get(client,keys)
       keys.each do |key|
         if @data[key]
           item = @data[key]
-          client.puts "VALUE #{key} #{item.flags} #{item.size}"
-          client.puts "#{item.value}"
+          print(client, "VALUE #{key} #{item.flags} #{item.size}")
+          print(client, "#{item.value}")
         end
       end
-      client.puts "END"
+      print(client, "END")
     end
 
     def getcas(client,keys)
       keys.each do |key|
         if @data[key]
           item = @data[key]
-          client.puts "VALUE #{key} #{item.flags} #{item.size} #{item.cas}"
-          client.puts "#{item.value}"
+          print(client, "VALUE #{key} #{item.flags} #{item.size} #{item.cas}")
+          print(client, "#{item.value}")
         end
       end
-      client.puts "END"
+      print(client, "END")
     end
   
     #set mykey <flags> <ttl> <size>
     def set(client,key, flags, ttl, size, datablock)
       item = Item.new(key,flags,ttl,size,datablock[0..size-1])
       @data[key] = item
-      client.puts "STORED"
+      print(client, "STORED")
     end
 
     #add newkey 0 60 5
     def add(client,key, flags, ttl, size, datablock)
       if @data[key]
-        client.puts "NOT STORED"
+        print(client,  "NOT STORED")
       else 
         item = Item.new(key,flags,ttl,size,datablock[0..size-1])
         @data[key] = item
-        client.puts "STORED"
+        print(client,  "STORED")
       end
     end
 
@@ -129,9 +138,9 @@ class Server
       if @data[key] 
         item = Item.new(key,flags,ttl,size,datablock[0..size-1])
         @data[key] = item
-        client.puts "STORED"
+        print(client,  "STORED")
       else
-        client.puts "NOT STORED"
+        print(client,  "NOT STORED")
       end
     end
 
@@ -144,9 +153,9 @@ class Server
         item.flags = flags
         item.value = item.value + datablock[0..size-1]
         @data[key] = item
-        client.puts "STORED"
+        print(client,  "STORED")
       else
-        client.puts "NOT STORED"
+        print(client,  "NOT STORED")
       end
     end
 
@@ -159,9 +168,9 @@ class Server
         item.flags = flags
         item.value = datablock[0..size-1] + item.value
         @data[key] = item
-        client.puts "STORED"
+        print(client,  "STORED")
       else
-        client.puts "NOT STORED"
+        print(client,  "NOT STORED")
       end
     end
 
@@ -175,9 +184,9 @@ class Server
         item.cas = cas
         item.value = datablock[0..size-1] + item.value
         @data[key] = item
-        client.puts "STORED"
+        print(client, "STORED")
       else
-        client.puts "NOT STORED"
+        print(client, "NOT STORED")
       end
     end
   end

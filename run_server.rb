@@ -2,5 +2,6 @@
 require "socket"
 require_relative "server.rb"
 
-servidor = Server.new()
-servidor.connect()
+server = Server.new()
+server.connect()
+server.listen()

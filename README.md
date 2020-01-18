@@ -20,8 +20,26 @@ RETRIEVAL COMMANDS
 
 STORAGE COMMANDS
 -   set: set <flag> <ttl> <size>
+                return:
+                    - STORED
+                    - NOT STORED
 -   add: add <flag> <ttl> <size>
+                return:
+                    - STORED
+                    - NOT STORED
 -   replace: replace <flag> <ttl> <size>
+                return:
+                    - STORED
+                    - NOT STORED
 -   append: append <flag> <ttl> <size>
+                return:
+                    - STORED
+                    - NOT STORED
 -   prepend: prepend <flag> <ttl> <size>
--   cas: 
+                return:
+                    - STORED
+                    - NOT STORED
+-   cas: cas <flag> <ttl> <size> <cas>
+                return:
+                    - STORED
+                    - NOT STORED

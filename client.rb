@@ -14,9 +14,8 @@ class Client
       @connected = false
     end
   
-    def connect()
+    def connect(port = 2000)
       hostname = 'localhost'
-      port = 2000
       @socket = TCPSocket.open(hostname, port)
       @connected = true
       line = @socket.gets   
@@ -81,8 +80,6 @@ class Client
 end
 
  
-int = Client.new()
-int.read_command()
 #int.interprete('gets 1,2')
 #int.interprete('set 7 0 0 8 cristian')
 #int.interprete('add 7 0 0 7 cebolla')
