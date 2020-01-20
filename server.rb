@@ -27,11 +27,11 @@ class Server
     attr_accessor :server
     
     def initialize(port = 2000)
-      thiago = Item.new("1",0,0,0,"thiago")
-      tito = Item.new("2",0,60,0,"tito")
-      topo = Item.new("3",0,0,0,"topo")
+      country = Item.new("country",0,0,7,"Uruguay")
+      city = Item.new("city",0,0,10,"Montevideo")
+      name = Item.new("name",0,0,8,"Cristian")
       @port = port
-      @data = {"1" => thiago, "2" => tito, "3" => topo}
+      @data = {"country" => country, "city" => city, "name" => name}
     end
 
     def interprete(client, line)
@@ -149,9 +149,10 @@ class Server
       if @data[key] 
         item = @data[key]
         item.size = item.size + size
-        item.expiration = ttl
+        item.ttl = ttl
         item.flags = flags
         item.value = item.value + datablock[0..size-1]
+        ttl === 0 ? item.expiration = Time.now + (60*60*24*365*10): item.expiration = Time.now + ttl
         @data[key] = item
         print(client,  "STORED")
       else
@@ -164,9 +165,10 @@ class Server
       if @data[key] 
         item = @data[key]
         item.size = item.size + size
-        item.expiration = ttl
+        item.ttl = ttl
         item.flags = flags
         item.value = datablock[0..size-1] + item.value
+        ttl === 0 ? item.expiration = Time.now + (60*60*24*365*10): item.expiration = Time.now + ttl
         @data[key] = item
         print(client,  "STORED")
       else
@@ -179,11 +181,12 @@ class Server
       if @data[key] 
         item = @data[key]
         if item.cas === cas 
-          item.size = item.size + size
-          item.expiration = ttl
+          item.size = size
+          item.ttl = ttl
           item.flags = flags
           item.cas = cas + 1
           item.value = datablock[0..size-1]
+          ttl === 0 ? item.expiration = Time.now + (60*60*24*365*10): item.expiration = Time.now + ttl
           @data[key] = item
           print(client, "STORED")
         else 

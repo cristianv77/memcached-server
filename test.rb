@@ -9,50 +9,101 @@ require "stringio"
 class TestServer < MiniTest::Unit::TestCase
 
     def test_connect
-        server = Server.new(2015)
+        server = Server.new(2010)
         assert_output( /RUNNING SERVER/) {server.connect()}
     end
 
     def test_get
-        server = Server.new(2010)
+        server = Server.new(2011)
         server.connect()
-        assert_output( /VALUE 1 0 0\nthiago\nEND/) {server.interprete(nil, "get 1")}
-        server.interprete(nil, "gets 1")
+        assert_output( /VALUE country 0 7\nUruguay\nEND/) {server.interprete(nil, "get country")}
+        assert_output( /VALUE country 0 7\nUruguay\nVALUE city 0 10\nMontevideo\nEND/) {server.interprete(nil, "get country,city")}
+        assert_output( /END/) {server.interprete(nil, "get lastname")}
     end
 
-    def test_storage
-        server = Server.new(2060)
+    def test_gets
+        server = Server.new(2012)
         server.connect()
-        server.interprete(nil, "set country 0 0 7 Uruguay")
-        server.get(nil, ["country","city"])
-        server.interprete(nil, "add country 0 0 7 Uruguay")
-        server.get(nil, ["country","city"])
-        server.interprete(nil, "add city 0 0 10 Montevideo")
-        server.get(nil, ["country","city"])
-        server.interprete(nil, "replace country 0 0 7 Bolivia")
-        server.get(nil, ["country","city"])
-        server.interprete(nil, "append city 0 0 7 Uruguay")
-        server.get(nil, ["country","city"])
-        server.interprete(nil, "prepend city 0 0 7 Pocitos")
-        server.get(nil, ["country","city"])
-    #    @server.interprete(nil, "cas country 0 0 7 Uruguay")
-     #   @server.get(nil, ["country"])
+        assert_output( /VALUE country 0 7 1\nUruguay\nEND/) {server.interprete(nil, "gets country")}
+        assert_output( /VALUE country 0 7 1\nUruguay\nVALUE city 0 10 1\nMontevideo\nEND/) {server.interprete(nil, "gets country,city")}
+        assert_output( /END/) {server.interprete(nil, "gets lastname")}
     end
 
+    def test_set 
+        server = Server.new(2013)
+        server.connect()
+        assert_output(/STORED/) {server.interprete(nil, "set country 0 0 7 Bolivia")}
+        assert_output( /VALUE country 0 7\nBolivia\nEND/) {server.interprete(nil, "get country")}
+        assert_output(/STORED/) {server.interprete(nil, "set lastname 0 0 6 Vargas")}
+        assert_output( /VALUE lastname 0 6\nVargas\nEND/) {server.interprete(nil, "get lastname")}
+    end
+
+    def test_add 
+        server = Server.new(2014)
+        server.connect()
+        assert_output(/NOT STORED/) {server.interprete(nil, "add country 0 0 7 Bolivia")}
+        assert_output( /VALUE country 0 7\nUruguay\nEND/) {server.interprete(nil, "get country")}
+        assert_output(/STORED/) {server.interprete(nil, "add lastname 0 0 6 Vargas")}
+        assert_output( /VALUE lastname 0 6\nVargas\nEND/) {server.interprete(nil, "get lastname")}
+    end
+
+    def test_replace 
+        server = Server.new(2015)
+        server.connect()
+        assert_output(/STORED/) {server.interprete(nil, "replace country 0 0 7 Bolivia")}
+        assert_output( /VALUE country 0 7\nBolivia\nEND/) {server.interprete(nil, "get country")}
+        assert_output(/NOT STORED/) {server.interprete(nil, "replace lastname 0 0 6 Vargas")}
+        assert_output( /END/) {server.interprete(nil, "get lastname")}
+    end
+
+    def test_append 
+        server = Server.new(2016)
+        server.connect()
+        assert_output(/STORED/) {server.interprete(nil, "append name 0 0 7 ,Vargas")}
+        assert_output( /VALUE name 0 15\nCristian,Vargas\nEND/) {server.interprete(nil, "get name")}
+        assert_output(/NOT STORED/) {server.interprete(nil, "append lastname 0 0 6 Vargas")}
+        assert_output( /END/) {server.interprete(nil, "get lastname")}
+    end
+
+    def test_prepend 
+        server = Server.new(2017)
+        server.connect()
+        assert_output(/STORED/) {server.interprete(nil, "prepend city 0 0 8 Pocitos,")}
+        assert_output( /VALUE city 0 18\nPocitos,Montevideo\nEND/) {server.interprete(nil, "get city")}
+        assert_output(/NOT STORED/) {server.interprete(nil, "prepend lastname 0 0 6 Vargas")}
+        assert_output( /END/) {server.interprete(nil, "get lastname")}
+    end
+
+    def test_cas 
+        server = Server.new(2018)
+        server.connect()
+        assert_output(/NOT_FOUND/) {server.interprete(nil, "cas lastname 0 0 6 2 Vargas")}
+        assert_output(/STORED/) {server.interprete(nil, "set lastname 0 0 6 Vargas")}
+        assert_output( /VALUE lastname 0 6 1\nVargas\nEND/) {server.interprete(nil, "gets lastname")}
+        assert_output(/EXISTS/) {server.interprete(nil, "cas lastname 0 0 5 2 Gomez")}
+        assert_output(/STORED/) {server.interprete(nil, "cas lastname 0 0 5 1 Gomez")}
+        assert_output( /VALUE lastname 0 5 2\nGomez\nEND/) {server.interprete(nil, "gets lastname")}
+    end
 
 end
 
-class TestClient < Test::Unit::TestCase
+class TestClient < MiniTest::Unit::TestCase
 
     def test_connect
-       #client = Client.new()
-      # assert_equal(client.connect(), puts('CONNECTED'))
+       client = Client.new()
+       assert_output( /CONNECTED/) {client.connect()}
     end
 
-    def test_interprete
-   #     client = Client.new()
-    #    client.connect()
-     #   assert_equal(client.interprete("get 1"), puts('VALUE 1 0 0'))
+    def test_errors
+        client = Client.new()
+        client.connect()
+        assert_output( /Wrong parameter/) {client.interprete("get 1, 2")}
+        assert_output( /Wrong parameter/) {client.interprete("set country 0 0 5 5")}
+        assert_output( /Wrong parameter/) {client.interprete("cas country 0 0 5 5 3")}
+        assert_output( /Key can not include a comma/) {client.interprete("cas country,city 0 0 5 5 3")}
+        assert_output( /Cas parameter must be a number/) {client.interprete("cas country 0 0 5 a")}
+        assert_output( /TTL parameter must be a number/) {client.interprete("cas country 0 a 5 5")}
+        assert_output( /Size must be a number/) {client.interprete("cas country 0 0 a 3")}
      end
 
 end

@@ -25,8 +25,8 @@ class Client
 
     def send(line)
       @socket.write(line)
-      response = @socket.recv(200) 
-      puts(response.chop)      
+      response = @socket.recv(2048) 
+      puts(response)      
     end
 
     def help()
@@ -34,24 +34,61 @@ class Client
       puts("get: get <key>")
       puts("gets: gets <key>")
       puts("set: set <flag> <ttl> <size>")
+      puts("      <datablock>")
       puts("add: add <flag> <ttl> <size>")
+      puts("      <datablock>")
       puts("replace: replace <flag> <ttl> <size>")
+      puts("      <datablock>")
       puts("append: append <flag> <ttl> <size>")
+      puts("      <datablock>")
       puts("prepend: prepend <flag> <ttl> <size>")
-      puts("cas:")
+      puts("      <datablock>")
+      puts("cas: cas <flag> <ttl> <size> <cas>")
+      puts("      <datablock>")
     end
-  
+
+    def is_number? (string)
+      true if Integer(string) rescue false
+    end
+
+    def verifyParameters(key, ttl, size, cas)
+      ttlIsNumber = is_number?(ttl)
+      sizeIsNumber = is_number?(size)
+      casIsNumber = is_number?(cas)
+      if key.include? ","
+        puts("Key can not include a comma")
+        return false 
+      end 
+      if !casIsNumber
+        puts("Cas parameter must be a number")
+        return false
+      end 
+      if !ttlIsNumber
+        puts("TTL parameter must be a number")
+        return false
+      end
+      if !sizeIsNumber
+        puts("Size must be a number")
+        return false
+      end
+      return true
+    end 
+
     def interprete(line)
       array = line.split(" ")
       command = array[0]
+      key = array[1]
       case command
         when "get","gets"
           array.length === 2 ? send(line): puts("Wrong parameters")
         when "set","add","replace","append","prepend"
-          datablock = gets.chomp
-          array.length === 5 ? send(line + " " + datablock): puts("Wrong parameters")
+          #datablock = 
+          clean = verifyParameters(array[1],array[3], array[4],0)
+          array.length === 5 ? (clean ? send(line + " " + gets.chomp): puts("For more information run help or -h.") ): puts("Wrong parameters") 
         when "cas"
-          array.length === 6 ? send(line): puts("Wrong parameters")
+          #datablock = gets.chomp
+          clean = verifyParameters(array[1],array[3], array[4],array[5])
+          array.length === 6 ? (clean ? send(line + " " + gets.chomp ): puts("For more information run help or -h.") ): puts("Wrong parameters")
           
       end
       
@@ -78,12 +115,3 @@ class Client
       end
     end
 end
-
- 
-#int.interprete('gets 1,2')
-#int.interprete('set 7 0 0 8 cristian')
-#int.interprete('add 7 0 0 7 cebolla')
-#int.interprete('replace 7 0 0 7 cebolla')
-#int.interprete('append 7 0 0 8 rodriguez')
-#int.interprete('prepend 7 0 0 8 cristian')
-#int.interprete('get 7')
