@@ -178,17 +178,22 @@ class Server
     def cas(client, key, flags, ttl, size, cas, datablock)
       if @data[key] 
         item = @data[key]
-        item.size = item.size + size
-        item.expiration = ttl
-        item.flags = flags
-        item.cas = cas
-        item.value = datablock[0..size-1] + item.value
-        @data[key] = item
-        print(client, "STORED")
+        if item.cas === cas 
+          item.size = item.size + size
+          item.expiration = ttl
+          item.flags = flags
+          item.cas = cas + 1
+          item.value = datablock[0..size-1]
+          @data[key] = item
+          print(client, "STORED")
+        else 
+          print(client, "EXISTS")
+        end
       else
-        print(client, "NOT STORED")
+        print(client, "NOT_FOUND")
       end
     end
+  
   end
 
   #servidor = Server.new()

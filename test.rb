@@ -1,22 +1,22 @@
 #!/usr/bin/env ruby
 require_relative "client.rb"
 require_relative "server.rb"
+require 'minitest/spec'
+require 'minitest/autorun'
 require "test/unit"
 require "stringio"
 
-class TestServer < Test::Unit::TestCase
-
-    
+class TestServer < MiniTest::Unit::TestCase
 
     def test_connect
-        server = Server.new()
-        assert_equal(server.connect(), puts('RUNNING SERVER'))
+        server = Server.new(2015)
+        assert_output( /RUNNING SERVER/) {server.connect()}
     end
 
     def test_get
         server = Server.new(2010)
         server.connect()
-        server.interprete(nil, "get 1")
+        assert_output( /VALUE 1 0 0\nthiago\nEND/) {server.interprete(nil, "get 1")}
         server.interprete(nil, "gets 1")
     end
 
