@@ -3,7 +3,7 @@
 RETRIEVAL COMMANDS
 -   get: get key 
 		
-	returns 
+	return: 
                 VALUE key flag size
                 value
        	
@@ -16,7 +16,7 @@ RETRIEVAL COMMANDS
 
 -   gets: gets key 
 		
-	returns 
+	return: 
                 VALUE key flag size cas
                 value
        	
