@@ -1,33 +1,33 @@
 # memcached-server
 
 RETRIEVAL COMMANDS
--   get: get <key> 
+-   get: get key 
                 returns 
-                VALUE <key> <flag> <size>
-                <value>
+                VALUE key flag size
+                value
         example: get country
                 returns 
                 VALUE country 0 7
                 Uruguay
         NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "get country,city".
--   gets: gets <key>
+-   gets: gets key
                 returns 
-                VALUE <key> <flag> <size> <cas>
-                <value>
+                VALUE key flag size cas
+                value
         example: gets country
                 returns 
                 VALUE country 0 7 1
                 Uruguay
         NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "gets country,city".
 STORAGE COMMANDS
--   set: set <key> <flag> <ttl> <size>
+-   set: set key flag ttl size
                 return:
                     - STORED in case all parameters are correct.
         example: set country 0 0 7
                 Uruguay
                 returns 
                 STORED
--   add: add <key> <flag> <ttl> <size>
+-   add: add key flag ttl size
                 return:
                     - STORED in case it is added correctly.
                     - NOT STORED in case the key already exists.
@@ -35,7 +35,7 @@ STORAGE COMMANDS
                 Uruguay
                 returns 
                 STORED
--   replace: replace <key> <flag> <ttl> <size>
+-   replace: replace key flag ttl size
                 return:
                     - STORED in case it is replaced correctly.
                     - NOT STORED in case the key does not exists.
@@ -43,7 +43,7 @@ STORAGE COMMANDS
                 Uruguay
                 returns 
                 STORED
--   append: append <key> <flag> <ttl> <size>
+-   append: append key flag ttl size
                 return:
                     - STORED in case it is appended correctly.
                     - NOT STORED in case the key does not exists.
@@ -51,7 +51,7 @@ STORAGE COMMANDS
                 Uruguay
                 returns 
                 STORED
--   prepend: prepend <key> <flag> <ttl> <size>
+-   prepend: prepend key flag ttl size
                 return:
                     - STORED in case it is updated correctly.
                     - NOT STORED in case the key does not exists.
@@ -59,7 +59,7 @@ STORAGE COMMANDS
                 Uruguay
                 returns 
                 STORED
--   cas: cas <key> <flag> <ttl> <size> <cas>
+-   cas: cas key flag ttl size cas
                 return:
                     - STORED in case it is updated correctly.
                     - NOT FOUND in case the key does not exists.
