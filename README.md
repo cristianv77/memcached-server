@@ -31,7 +31,7 @@ RETRIEVAL COMMANDS
 -   set: set key flag ttl size
                 	
 	return:
-                - STORED in case all parameters are correct.
+        - STORED in case all parameters are correct.
 		    
         	example: set country 0 0 7
                 	Uruguay
@@ -41,8 +41,8 @@ RETRIEVAL COMMANDS
 -   add: add key flag ttl size
 
        return:
-                - STORED in case it is added correctly.
-                - NOT STORED in case the key already exists.
+       - STORED in case it is added correctly.	
+       - NOT STORED in case the key already exists.
         
 		example: add country 0 0 7
                 	Uruguay
@@ -52,8 +52,8 @@ RETRIEVAL COMMANDS
 -   replace: replace key flag ttl size
         
 	return:
-        	- STORED in case it is replaced correctly.
-                - NOT STORED in case the key does not exists.
+        - STORED in case it is replaced correctly.
+        - NOT STORED in case the key does not exists.
         
 		example: replace country 0 0 7
                 	Uruguay
@@ -62,8 +62,8 @@ RETRIEVAL COMMANDS
 			
 -   append: append key flag ttl size
    	return:
-       		- STORED in case it is appended correctly.
-                - NOT STORED in case the key does not exists.
+       	- STORED in case it is appended correctly.
+       	- NOT STORED in case the key does not exists.
         
 		example: append country 0 0 7
                 	Uruguay
@@ -72,8 +72,8 @@ RETRIEVAL COMMANDS
 			
 -   prepend: prepend key flag ttl size
 	return:
-		- STORED in case it is updated correctly.
-                - NOT STORED in case the key does not exists.
+	- STORED in case it is updated correctly.
+        - NOT STORED in case the key does not exists.
         
 		example: prepend country 0 0 7
                 	Uruguay
@@ -82,9 +82,9 @@ RETRIEVAL COMMANDS
 			
 -   cas: cas key flag ttl size cas
 	return:
-		- STORED in case it is updated correctly.
-                - NOT FOUND in case the key does not exists.
-                - EXISTS in case the key is already updated.
+	- STORED in case it is updated correctly.
+        - NOT FOUND in case the key does not exists.
+        - EXISTS in case the key is already updated.
         
 		example: cas country 0 0 7 1
                 	Uruguay
