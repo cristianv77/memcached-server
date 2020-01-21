@@ -2,24 +2,32 @@
 
 RETRIEVAL COMMANDS
 -   get: get key 
-                returns 
+		
+	returns 
                 VALUE key flag size
                 value
-        example: get country
+       	
+		example: get country
                 returns 
                 VALUE country 0 7
                 Uruguay
-        NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "get country,city".
--   gets: gets key
-                returns 
+        	
+   NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "get country,city".
+
+-   gets: gets key 
+		
+	returns 
                 VALUE key flag size cas
                 value
-        example: gets country
+       	
+		example: gets country
                 returns 
                 VALUE country 0 7 1
                 Uruguay
-        NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "gets country,city".
-STORAGE COMMANDS
+        	
+   NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "gets country,city".
+   
+   STORAGE COMMANDS
 -   set: set key flag ttl size
                 return:
                     - STORED in case all parameters are correct.
