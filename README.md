@@ -2,10 +2,11 @@
 
 RETRIEVAL COMMANDS
 -   get: get key 
-		
-	return: 
-                VALUE key flag size
-                value
+	
+	return:
+       - VALUE key flag size
+         
+	 value
        	
 		example: get country
                 returns 
@@ -16,9 +17,10 @@ RETRIEVAL COMMANDS
 
 -   gets: gets key 
 		
-	return: 
-                VALUE key flag size cas
-                value
+	return:
+       - VALUE key flag size cas
+         
+	 value
        	
 		example: gets country
                 returns 
@@ -29,10 +31,10 @@ RETRIEVAL COMMANDS
    
    STORAGE COMMANDS
 -   set: set key flag ttl size
-                	
+        
 	return:
-        - STORED in case all parameters are correct.
-		    
+	- STORED in case all parameters are correct.
+    
         	example: set country 0 0 7
                 	Uruguay
                 returns 
@@ -52,8 +54,8 @@ RETRIEVAL COMMANDS
 -   replace: replace key flag ttl size
         
 	return:
-        - STORED in case it is replaced correctly.
-        - NOT STORED in case the key does not exists.
+       - STORED in case it is replaced correctly.	
+       - NOT STORED in case the key does not exists.
         
 		example: replace country 0 0 7
                 	Uruguay
@@ -61,9 +63,10 @@ RETRIEVAL COMMANDS
                 	STORED
 			
 -   append: append key flag ttl size
-   	return:
-       	- STORED in case it is appended correctly.
-       	- NOT STORED in case the key does not exists.
+   	
+	return:
+       - STORED in case it is appended correctly.	
+       - NOT STORED in case the key does not exists.
         
 		example: append country 0 0 7
                 	Uruguay
@@ -72,8 +75,8 @@ RETRIEVAL COMMANDS
 			
 -   prepend: prepend key flag ttl size
 	return:
-	- STORED in case it is updated correctly.
-        - NOT STORED in case the key does not exists.
+       - STORED in case it is updated correctly.	
+       - NOT STORED in case the key does not exists.
         
 		example: prepend country 0 0 7
                 	Uruguay
@@ -82,10 +85,10 @@ RETRIEVAL COMMANDS
 			
 -   cas: cas key flag ttl size cas
 	return:
-	- STORED in case it is updated correctly.
-        - NOT FOUND in case the key does not exists.
-        - EXISTS in case the key is already updated.
-        
+       - STORED in case it is added correctly.	
+       - NOT FOUND in case the key does not exists.
+       - EXISTS in case the key is already updated.
+       
 		example: cas country 0 0 7 1
                 	Uruguay
                 returns 
