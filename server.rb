@@ -1,25 +1,6 @@
 #!/usr/bin/env ruby
 require "socket"
-
-class Item
-  attr_accessor :key
-  attr_accessor :value
-  attr_accessor :ttl
-  attr_accessor :expiration
-  attr_accessor :size
-  attr_accessor :flags
-  attr_accessor :cas
-
-  def initialize(key,flags,ttl,size,value)
-    @key = key
-    @flags = flags
-    @ttl = ttl
-    @size = size
-    @value = value
-    @cas = 1
-    ttl === 0 ? @expiration = Time.now + (60*60*24*365*10): @expiration = Time.now + ttl
-  end
-end
+require_relative "item.rb"
 
 class Server
     attr_accessor :port
@@ -34,6 +15,7 @@ class Server
       @data = {"country" => country, "city" => city, "name" => name}
     end
 
+    #Interprete method reads the line received and call the corresponding method
     def interprete(client, line)
       array = line.split(" ")
       command = array[0]
@@ -57,7 +39,8 @@ class Server
       end
     end
 
-    def depurate()
+    #Purge method for deleting expired keys
+    def purge()
       time = Time.now
       @data.each do |key, item|
         if item.expiration < time
@@ -67,18 +50,20 @@ class Server
       end
     end
 
+    #Connect the server
     def connect()
       @pid = Process.pid
       @server = TCPServer.open(@port)    
       puts("RUNNING SERVER")
     end
 
+    #Listen what the server receives
     def listen()
       loop {                           
         Thread.start(@server.accept) do |client|
           client.puts(Time.now.ctime)   
           while line = client.recv(200)
-            depurate()
+            purge()
             puts line
             interprete(client,line)
           end
@@ -86,6 +71,7 @@ class Server
       }
     end
 
+    #Print method for printing in the client and in the server the response
     def print (client, line)
       if client != nil 
         client.puts(line)
@@ -93,36 +79,42 @@ class Server
       puts line
     end
   
+    #Get method
     def get(client,keys)
+      line = ""
       keys.each do |key|
         if @data[key]
           item = @data[key]
-          print(client, "VALUE #{key} #{item.flags} #{item.size}")
-          print(client, "#{item.value}")
+          line += "VALUE #{key} #{item.flags} #{item.size}\n"
+          line += "#{item.value}\n"
         end
       end
-      print(client, "END")
+      line += "END\n"
+      print(client, line)
     end
 
+    #Gets method
     def getcas(client,keys)
+      line = ""
       keys.each do |key|
         if @data[key]
           item = @data[key]
-          print(client, "VALUE #{key} #{item.flags} #{item.size} #{item.cas}")
-          print(client, "#{item.value}")
+          line += "VALUE #{key} #{item.flags} #{item.size} #{item.cas}\n"
+          line += "#{item.value}\n"
         end
       end
-      print(client, "END")
+      line += "END\n"
+      print(client, line)
     end
   
-    #set mykey <flags> <ttl> <size>
+    #Set method
     def set(client,key, flags, ttl, size, datablock)
       item = Item.new(key,flags,ttl,size,datablock[0..size-1])
       @data[key] = item
       print(client, "STORED")
     end
 
-    #add newkey 0 60 5
+    #Add method
     def add(client,key, flags, ttl, size, datablock)
       if @data[key]
         print(client,  "NOT STORED")
@@ -133,7 +125,7 @@ class Server
       end
     end
 
-    #replace key 0 60 5
+    #Replace method
     def replace(client,key, flags, ttl, size, datablock)
       if @data[key] 
         item = Item.new(key,flags,ttl,size,datablock[0..size-1])
@@ -144,7 +136,7 @@ class Server
       end
     end
 
-    #append key 0 60 15
+    #Append method
     def append(client,key, flags, ttl, size, datablock)
       if @data[key] 
         item = @data[key]
@@ -160,7 +152,7 @@ class Server
       end
     end
 
-    #prepend key 0 60 15
+    #Prepend method
     def prepend(client, key, flags, ttl, size, datablock)
       if @data[key] 
         item = @data[key]
@@ -176,7 +168,7 @@ class Server
       end
     end
 
-    #"cas" is a check and set operation which means "store this data but only if no one else has updated since I last fetched it."
+    #Cas method
     def cas(client, key, flags, ttl, size, cas, datablock)
       if @data[key] 
         item = @data[key]
@@ -196,35 +188,4 @@ class Server
         print(client, "NOT_FOUND")
       end
     end
-  
   end
-
-  #servidor = Server.new()
-  #servidor.connect()
-  #servidor.get(["1","3","7"])
-  #puts("=======================")
-  #servidor.set("7","FF",0,5,"cebolla")
-  #puts("=======================")
-  #servidor.get("7")
-  #puts("=======================")
-  #servidor.add("7","FF",0,7,"cebolla")
-  #puts("=======================")
-  #servidor.get("7")
-  #puts("=======================")
-  #servidor.replace("7","FF",0,7,"cebolla")
-  #puts("=======================")
-  #servidor.get("7")
-  #puts("=======================")
-  #servidor.append("7","FF",0,5,"rodriguez")
-  #puts("=======================")
-  #servidor.get("7")
-  #puts("=======================")
-  #servidor.prepend("7","FF",0,8,"cristiant")
-  #puts("=======================")
-  #servidor.get("7")
-
-
-
-
-
-  

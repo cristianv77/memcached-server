@@ -14,6 +14,7 @@ class Client
       @connected = false
     end
   
+    #Connect the socket to the server
     def connect(port = 2000)
       hostname = 'localhost'
       @socket = TCPSocket.open(hostname, port)
@@ -23,12 +24,14 @@ class Client
       puts(line.chop)
     end
 
+    #Send the command to the server and read response
     def send(line)
       @socket.write(line)
-      response = @socket.recv(2048) 
-      puts(response)      
+      response = @socket.recvfrom(2048)
+      puts(response[0]) 
     end
 
+    #Help method for printing in console
     def help()
       puts("COMMANDS:")
       puts("get: get <key>")
@@ -45,12 +48,15 @@ class Client
       puts("      <datablock>")
       puts("cas: cas <flag> <ttl> <size> <cas>")
       puts("      <datablock>")
+      puts("telnet: for connecting to the server")
     end
 
+    #Help method for considering if a parameter received is a number of not
     def is_number? (string)
       true if Integer(string) rescue false
     end
 
+    #Verify if parameters are numbers and if the key does not include a comma
     def verifyParameters(key, ttl, size, cas)
       ttlIsNumber = is_number?(ttl)
       sizeIsNumber = is_number?(size)
@@ -74,6 +80,7 @@ class Client
       return true
     end 
 
+    #Interprete the command writen, and verify parameters before sending
     def interprete(line)
       array = line.split(" ")
       command = array[0]
@@ -81,19 +88,16 @@ class Client
       case command
         when "get","gets"
           array.length === 2 ? send(line): puts("Wrong parameters")
-        when "set","add","replace","append","prepend"
-          #datablock = 
+        when "set","add","replace","append","prepend" 
           clean = verifyParameters(array[1],array[3], array[4],0)
           array.length === 5 ? (clean ? send(line + " " + gets.chomp): puts("For more information run help or -h.") ): puts("Wrong parameters") 
         when "cas"
-          #datablock = gets.chomp
           clean = verifyParameters(array[1],array[3], array[4],array[5])
           array.length === 6 ? (clean ? send(line + " " + gets.chomp ): puts("For more information run help or -h.") ): puts("Wrong parameters")
-          
       end
-      
     end
 
+    #Read commands
     def read_command()
       command = ""
       while command != "-q" && command != "quit"
