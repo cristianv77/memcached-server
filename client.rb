@@ -57,7 +57,7 @@ class Client
     end
 
     #Verify if parameters are numbers and if the key does not include a comma
-    def verifyParameters(key, flag, ttl, size, cas)
+    def verify_parameters(key, flag, ttl, size, cas)
       flagIsNumber = is_number?(flag)
       ttlIsNumber = is_number?(ttl)
       sizeIsNumber = is_number?(size)
@@ -94,9 +94,9 @@ class Client
         when "get","gets"
           array.length === 2 ? send(line): puts("ERROR\n For more than one key, keys must be separated by a comma, with no spaces. E.g. get key1,key2")
         when "set","add","replace","append","prepend" 
-          array.length === 5 ? (verifyParameters(array[1],array[2],array[3], array[4],0) ? send(line + " " + gets.chomp): puts("For more information run help or -h.") ): puts("ERROR") 
+          array.length === 5 ? (verify_parameters(array[1],array[2],array[3], array[4],0) ? send(line + " " + gets.chomp): puts("For more information run help or -h.") ): puts("ERROR") 
         when "cas"
-          array.length === 6 ? (verifyParameters(array[1],array[2],array[3], array[4],array[5]) ? send(line + " " + gets.chomp ): puts("For more information run help or -h.") ): puts("ERROR")
+          array.length === 6 ? (verify_parameters(array[1],array[2],array[3], array[4],array[5]) ? send(line + " " + gets.chomp ): puts("For more information run help or -h.") ): puts("ERROR")
       end
     end
 
