@@ -87,7 +87,7 @@ RETRIEVAL COMMANDS
 	return:
        - STORED in case it is added correctly.	
        - NOT FOUND in case the key does not exists.
-       - EXISTS in case the key is already updated.
+       - EXISTS in case the key was already updated.
        
 		example: cas country 0 0 7 1
                 	Uruguay
@@ -105,7 +105,7 @@ For running a client, you must run the command "ruby run_client.rb" in cmd or te
 Getting started:
 1. First of all, run the server.
 2. Then, run the client, and then connect to the server (For this, you must write "telnet", which is the command selected for connection. The connection is mandatory for sending commands to the server, if not, an error will be displayed).
-NOTE: For more information during execution, it is posible to execute the command "help" or the command "-h". Both of them prints the same information on the console.
+NOTE: For more information during execution, it is posible to execute the command "help" or the command "-h". Both of them print the same information on the console.
 
 For running tests
 For running tests, you must run the command "ruby test.rb" in cmd or terminal. 

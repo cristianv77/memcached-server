@@ -51,49 +51,52 @@ class Client
       puts("telnet: for connecting to the server")
     end
 
-    #Help method for considering if a parameter received is a number of not
+    #Help method for checking if a parameter received is a number of not
     def is_number? (string)
       true if Integer(string) rescue false
     end
 
     #Verify if parameters are numbers and if the key does not include a comma
-    def verifyParameters(key, ttl, size, cas)
+    def verifyParameters(key, flag, ttl, size, cas)
+      flagIsNumber = is_number?(flag)
       ttlIsNumber = is_number?(ttl)
       sizeIsNumber = is_number?(size)
       casIsNumber = is_number?(cas)
       if key.include? ","
-        puts("Key can not include a comma")
+        puts("Key must not include a comma.")
         return false 
       end 
+      if !flagIsNumber
+        puts("Flag parameter must be a number.")
+        return false
+      end 
       if !casIsNumber
-        puts("Cas parameter must be a number")
+        puts("Cas parameter must be a number.")
         return false
       end 
       if !ttlIsNumber
-        puts("TTL parameter must be a number")
+        puts("TTL parameter must be a number.")
         return false
       end
       if !sizeIsNumber
-        puts("Size must be a number")
+        puts("Size must be a number.")
         return false
       end
       return true
     end 
 
-    #Interprete the command writen, and verify parameters before sending
+    #Interprete the command written, and verify parameters before sending the command
     def interprete(line)
       array = line.split(" ")
       command = array[0]
       key = array[1]
       case command
         when "get","gets"
-          array.length === 2 ? send(line): puts("Wrong parameters")
+          array.length === 2 ? send(line): puts("ERROR\n For more than one key, keys must be separated by a comma, with no spaces. E.g. get key1,key2")
         when "set","add","replace","append","prepend" 
-          clean = verifyParameters(array[1],array[3], array[4],0)
-          array.length === 5 ? (clean ? send(line + " " + gets.chomp): puts("For more information run help or -h.") ): puts("Wrong parameters") 
+          array.length === 5 ? (verifyParameters(array[1],array[2],array[3], array[4],0) ? send(line + " " + gets.chomp): puts("For more information run help or -h.") ): puts("ERROR") 
         when "cas"
-          clean = verifyParameters(array[1],array[3], array[4],array[5])
-          array.length === 6 ? (clean ? send(line + " " + gets.chomp ): puts("For more information run help or -h.") ): puts("Wrong parameters")
+          array.length === 6 ? (verifyParameters(array[1],array[2],array[3], array[4],array[5]) ? send(line + " " + gets.chomp ): puts("For more information run help or -h.") ): puts("ERROR")
       end
     end
 
@@ -108,13 +111,13 @@ class Client
           when "telnet"
             @connected ? puts("ALREADY CONNECTED"): connect()
           when "-h", "help"
-            array.length === 1 ? help(): puts("Not help parameters")
+            array.length === 1 ? help(): puts("Help command does not receive parameters.")
           when "-q", "quit"
             puts("CLOSED")
           when "get","gets", "set","add","replace","append","prepend","cas"
-            @connected ? interprete(line): puts("Not connection with any server")
+            @connected ? interprete(line): puts("No connection with any server")
           else 
-            puts("Wrong command")
+            puts("ERROR")
         end
       end
     end
