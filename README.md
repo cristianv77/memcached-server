@@ -1,38 +1,36 @@
 # memcached-server
 
-RETRIEVAL COMMANDS
--   get: get key 
+## RETRIEVAL COMMANDS
+### -   get: get key 
 	
-	return:
+	returns:
        - VALUE key flag size
-         
-	 value
+	 	value
        	
 		example: get country
                 returns 
-                VALUE country 0 7
-                Uruguay
+                	VALUE country 0 7
+                	Uruguay
         	
-   NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "get country,city".
+   **NOTE:** It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "get country,city".
 
--   gets: gets key 
+### -   gets: gets key 
 		
-	return:
+	returns:
        - VALUE key flag size cas
-         
-	 value
+         	value
        	
 		example: gets country
                 returns 
-                VALUE country 0 7 1
-                Uruguay
+                	VALUE country 0 7 1
+                	Uruguay
         	
-   NOTE: It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "gets country,city".
+   **NOTE:** It is posible to ask for more than one key. For this, keys must be separated by a comma (","), with no spaces. For example "gets country,city".
    
-   STORAGE COMMANDS
--   set: set key flag ttl size
+  ## STORAGE COMMANDS
+### -   set: set key flag ttl size
         
-	return:
+	returns:
 	- STORED in case all parameters are correct.
     
         	example: set country 0 0 7
@@ -40,9 +38,9 @@ RETRIEVAL COMMANDS
                 returns 
                 	STORED
 			
--   add: add key flag ttl size
+### -   add: add key flag ttl size
 
-       return:
+       returns:
        - STORED in case it is added correctly.	
        - NOT STORED in case the key already exists.
         
@@ -51,9 +49,9 @@ RETRIEVAL COMMANDS
                 returns 
                 	STORED
 			
--   replace: replace key flag ttl size
+### -   replace: replace key flag ttl size
         
-	return:
+	returns:
        - STORED in case it is replaced correctly.	
        - NOT STORED in case the key does not exists.
         
@@ -62,9 +60,9 @@ RETRIEVAL COMMANDS
                 returns 
                 	STORED
 			
--   append: append key flag ttl size
+### -   append: append key flag ttl size
    	
-	return:
+	returns:
        - STORED in case it is appended correctly.	
        - NOT STORED in case the key does not exists.
         
@@ -73,8 +71,8 @@ RETRIEVAL COMMANDS
                 returns 
                 	STORED
 			
--   prepend: prepend key flag ttl size
-	return:
+### -   prepend: prepend key flag ttl size
+	returns:
        - STORED in case it is updated correctly.	
        - NOT STORED in case the key does not exists.
         
@@ -83,8 +81,8 @@ RETRIEVAL COMMANDS
                 returns 
                 	STORED
 			
--   cas: cas key flag ttl size cas
-	return:
+### -   cas: cas key flag ttl size cas
+	returns:
        - STORED in case it is added correctly.	
        - NOT FOUND in case the key does not exists.
        - EXISTS in case the key was already updated.
@@ -94,20 +92,21 @@ RETRIEVAL COMMANDS
                 returns 
                 	STORED
 
-NOTE: If TTL is 0 for any of the STORAGE COMMANDS, then the key will never expirate in the server. Otherwise, TTL will be the expiration time in seconds since it is stored.
+**NOTE:** If TTL is 0 for any of the STORAGE COMMANDS, then the key will never expirate in the server. Otherwise, TTL will be the expiration time in seconds since it is stored.
 
-Run server:
+**Run server:**
 For running the server, you must run the command "ruby run_server.rb" in cmd or terminal.
 
-Run client:
+**Run client:**
 For running a client, you must run the command "ruby run_client.rb" in cmd or terminal.
 
-Getting started:
+**Getting started:**
 1. First of all, run the server.
 2. Then, run the client, and then connect to the server (For this, you must write "telnet", which is the command selected for connection. The connection is mandatory for sending commands to the server, if not, an error will be displayed).
-NOTE: For more information during execution, it is posible to execute the command "help" or the command "-h". Both of them print the same information on the console.
+**NOTE:** For more information during execution, it is posible to execute the command "help" or the command "-h". Both of them print the same information on the console.
 
-For running tests
-For running tests, you must run the command "ruby test.rb" in cmd or terminal. 
-NOTE: For running the client tests, the server must be running. 
+**Run tests:**
+1. Run server. (Otherwise, some tests will fail)
+2. For running tests, you must run the command "ruby test.rb" in another cmd or terminal. 
+
 
