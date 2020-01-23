@@ -12,7 +12,7 @@ class Server
       city = Item.new("city",0,0,10,"Montevideo")
       name = Item.new("name",0,0,8,"Cristian")
       @port = port
-      @data = {"country" => country, "city" => city, "name" => name}
+      @data = {}
     end
 
     #Interprete method reads the line received and call the corresponding method
